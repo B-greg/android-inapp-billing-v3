@@ -36,10 +36,30 @@ class Constants {
 	public static final String BUY_INTENT = "BUY_INTENT";
 	public static final String INAPP_PURCHASE_DATA = "INAPP_PURCHASE_DATA";
     public static final String RESPONSE_INAPP_SIGNATURE = "INAPP_DATA_SIGNATURE";
+    public static final String RESPONSE_GET_SKU_DETAILS_LIST = "DETAILS_LIST";
+    
+    // some fields on the getSkuDetails response bundle
+    public static final String GET_SKU_DETAILS_ITEM_LIST = "ITEM_ID_LIST";
+    public static final String GET_SKU_DETAILS_ITEM_TYPE_LIST = "ITEM_TYPE_LIST";
 
 	public static final int BILLING_ERROR_FAILED_LOAD_PURCHASES = 100;
 	public static final int BILLING_ERROR_FAILED_TO_INITIALIZE_PURCHASE = 101;
 	public static final int BILLING_ERROR_INVALID_SIGNATURE = 102;
 	public static final int BILLING_ERROR_LOST_CONTEXT = 103;
 	public static final int BILLING_ERROR_OTHER_ERROR = 110;
+	
+    // IAB Helper error codes
+    public static final int IABHELPER_ERROR_BASE = -1000;
+    public static final int IABHELPER_REMOTE_EXCEPTION = -1001;
+    public static final int IABHELPER_BAD_RESPONSE = -1002;
+    public static final int IABHELPER_VERIFICATION_FAILED = -1003;
+    public static final int IABHELPER_SEND_INTENT_FAILED = -1004;
+    public static final int IABHELPER_USER_CANCELLED = -1005;
+    public static final int IABHELPER_UNKNOWN_PURCHASE_RESPONSE = -1006;
+    public static final int IABHELPER_MISSING_TOKEN = -1007;
+    public static final int IABHELPER_UNKNOWN_ERROR = -1008;
+    public static final int IABHELPER_SUBSCRIPTIONS_NOT_AVAILABLE = -1009;
+    public static final int IABHELPER_INVALID_CONSUMPTION = -1010;
+
+
 }
