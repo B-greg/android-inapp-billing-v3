@@ -15,50 +15,117 @@
 
 package com.anjlab.android.iab.v3;
 
+import java.util.regex.Pattern;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.util.Log;
 
 /**
  * Represents an in-app product's listing details.
  */
 public class SkuDetails {
-    String mItemType;
-    String mSku;
-    String mType;
-    String mPrice;
-    String mPriceCurrencyCode;
-    String mTitle;
-    String mDescription;
-    String mJson;
+	String mItemType;
+	String mSku;
+	String mType;
+	String mPrice;
+	String mPriceCurrencyCode;
+	String mTitle;
+	String mDescription;
+	String mJson;
 
-    public SkuDetails(String jsonSkuDetails) throws JSONException {
-        this(Constants.PRODUCT_TYPE_MANAGED, jsonSkuDetails);
-    }
+	public SkuDetails(String jsonSkuDetails) throws JSONException {
+		this(Constants.PRODUCT_TYPE_MANAGED, jsonSkuDetails);
+	}
 
-    public SkuDetails(String itemType, String jsonSkuDetails) throws JSONException {
-        mItemType = itemType;
-        mJson = jsonSkuDetails;
-        JSONObject o = new JSONObject(mJson);
-        mSku = o.optString("productId");
-        mType = o.optString("type");
-        mPrice = o.optString("price");
-        mTitle = o.optString("title");
-        mDescription = o.optString("description");
-        mPriceCurrencyCode = o.optString("price_currency_code");
-    }
+	public SkuDetails(String itemType, String jsonSkuDetails) throws JSONException {
+		mItemType = itemType;
+		mJson = jsonSkuDetails;
+		JSONObject o = new JSONObject(mJson);
+		mSku = o.optString("productId");
+		mType = o.optString("type");
+		mPrice = o.optString("price");
+		mTitle = o.optString("title");
+		mDescription = o.optString("description");
+		mPriceCurrencyCode = o.optString("price_currency_code");
+	}
 
-    public String getSku() { return mSku; }
-    public String getType() { return mType; }
-    public String getPrice() { return mPrice; }
-    public String getTitle() { return mTitle; }
-    public String getDescription() { return mDescription; }
-    public String getPriceCurrencyCode() { return mPriceCurrencyCode; }
-    
-    public String getPriceCurrencySymbole() { return mPrice.substring(0, 1); }
-    public String getPriceNoCurrency() { return mPrice.substring(1); }
+	public String getSku() { return mSku; }
+	public String getType() { return mType; }
+	public String getPrice() { return mPrice; }
+	public String getTitle() { return mTitle; }
+	public String getDescription() { return mDescription; }
+	public String getPriceCurrencyCode() { return mPriceCurrencyCode; }
 
-    @Override
-    public String toString() {
-        return "SkuDetails:" + mJson;
-    }
+	public String getPriceCurrencySymbole() {
+		Pattern mPattern = Pattern.compile("^[0-9]?$");
+		String myCurrency = "";
+		if(!mPattern.matcher(mPrice.substring(0, 1)).matches()){
+			for (int i = 0; i < mPrice.length(); i++) {
+				int j = i+1;
+				if(!mPattern.matcher(mPrice.substring(i, j)).matches() && 
+						!mPrice.substring(i, j).equals(",") && 
+						!mPrice.substring(i, j).equals(".")){
+					myCurrency += mPrice.substring(i, j);
+				}
+
+			}
+		}else if(!mPattern.matcher(mPrice.substring(mPrice.length()-1, mPrice.length())).matches()){
+			for (int i = 0; i < mPrice.length(); i++) {
+				int j = i+1;
+				if(!mPattern.matcher(mPrice.substring(mPrice.length()-j, mPrice.length()-i)).matches() &&
+						!mPrice.substring(mPrice.length()-j, mPrice.length()-i).equals(",") &&
+						!mPrice.substring(mPrice.length()-j, mPrice.length()-i).equals(".")){
+					myCurrency += mPrice.substring(mPrice.length()-j, mPrice.length()-i);
+				}
+			}
+			String currencyTemp = myCurrency;
+			//reverse string
+			if(myCurrency.length() > 1){
+				myCurrency = "";
+				for (int i = currencyTemp.length() - 1 ; i >= 0 ; i--) {
+					myCurrency += currencyTemp.charAt(i);
+				}
+			}
+		}
+		return myCurrency.trim();
+	}
+
+	public String getPriceNoCurrency() {
+		Pattern mPattern = Pattern.compile("^[0-9]?$");
+		String myPrice = "";
+		if(!mPattern.matcher(mPrice.substring(0, 1)).matches()){
+			for (int i = 0; i < mPrice.length(); i++) {
+				int j = i+1;
+				if(mPattern.matcher(mPrice.substring(i, j)).matches() || 
+						mPrice.substring(i, j).equals(",") || 
+						mPrice.substring(i, j).equals(".")){
+					myPrice += mPrice.substring(i, j);
+				}
+			}
+		}else if(!mPattern.matcher(mPrice.substring(mPrice.length()-1, mPrice.length())).matches()){
+			for (int i = 0; i < mPrice.length(); i++) {
+				int j = i+1;
+				if(mPattern.matcher(mPrice.substring(mPrice.length()-j, mPrice.length()-i)).matches() ||
+						mPrice.substring(mPrice.length()-j, mPrice.length()-i).equals(",") ||
+						mPrice.substring(mPrice.length()-j, mPrice.length()-i).equals(".")){
+
+					myPrice += mPrice.substring(mPrice.length()-j, mPrice.length()-i);
+				}
+			}
+			String priceTemp = myPrice;
+			//reverse string
+			myPrice = "";
+			for (int i = priceTemp.length() - 1 ; i >= 0 ; i--) {
+				myPrice += priceTemp.charAt(i);
+			}
+		}
+		return myPrice.trim();
+	}
+
+	@Override
+	public String toString() {
+		return "SkuDetails:" + mJson;
+	}
 }

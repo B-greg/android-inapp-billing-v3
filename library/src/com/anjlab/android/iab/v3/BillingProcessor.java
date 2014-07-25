@@ -43,7 +43,7 @@ public class BillingProcessor extends BillingBase {
      * Apps must implement one of these to construct a BillingProcessor.
      */
     public static interface IBillingHandler {
-        void onProductPurchased(String productId);
+        void onProductPurchased(String productId, boolean isOwn);
         void onPurchaseHistoryRestored();
         void onBillingError(int errorCode, Throwable error);
         void onBillingInitialized();
@@ -218,21 +218,27 @@ public class BillingProcessor extends BillingBase {
                 int response = bundle.getInt(Constants.RESPONSE_CODE);
                 if (response == Constants.BILLING_RESPONSE_RESULT_OK) {
                     PendingIntent pendingIntent = bundle.getParcelable(Constants.BUY_INTENT);
-                    if (getContext() != null)
-                        getContext().startIntentSenderForResult(pendingIntent.getIntentSender(), PURCHASE_FLOW_REQUEST_CODE, new Intent(), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0));
-                    else
+                    if (getContext() != null){   
+                    	getContext().startIntentSenderForResult(pendingIntent.getIntentSender(), PURCHASE_FLOW_REQUEST_CODE, new Intent(), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0));
+                        
+                    }
+                     else{
                         if(eventHandler != null)
                             eventHandler.onBillingError(Constants.BILLING_ERROR_LOST_CONTEXT, null);
+                     }
                 }
                 else if (response == Constants.BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED) {
-                    if (!isPurchased(productId) && !isSubscribed(productId))
+                    if (!isPurchased(productId) && !isSubscribed(productId)){
                         loadOwnedPurchasesFromGoogle();
-                    if(eventHandler != null)
-                        eventHandler.onProductPurchased(productId);
+                    }
+                    if(eventHandler != null){
+                        eventHandler.onProductPurchased(productId, true);
+                    }
                 }
-                else
+                else{
                     if(eventHandler != null)
                         eventHandler.onBillingError(Constants.BILLING_ERROR_FAILED_TO_INITIALIZE_PURCHASE, null);
+                }
             }
             return true;
         } catch (Exception e) {
@@ -288,7 +294,7 @@ public class BillingProcessor extends BillingBase {
                     if (verifyPurchaseSignature(purchaseData, dataSignature)) {
                         cachedProducts.put(productId, purchaseToken);
                         if(eventHandler != null)
-                            eventHandler.onProductPurchased(productId);
+                            eventHandler.onProductPurchased(productId, false);
                     }
                     else {
                         Log.e(LOG_TAG, "Public key signature doesn't match!");
